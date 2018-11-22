@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-3.2.xsd ">
+
+    <!--基于注解的方式配置处理器映射器和适配器方法一-->
+    <!--配置基于注解的处理器适配器与处理器映射器-->
+    <mvc:annotation-driven conversion-service="conversionService" validator="validator"/>
+
+    <!--配置校验器-->
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
+        <property name="validationMessageSource" ref="messageSource" />
+    </bean>
+
+    <!--校验错误信息配置-->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>classpath:LoginValidationMessage</value>
+            </list>
+        </property>
+        <property name="fileEncodings" value="UTF-8" />
+        <property name="cacheSeconds" value="120" />
+    </bean>
+
+    <!--基于注解的方式配置处理器映射器和适配器方法二-->
+    <!--注解映射器-->
+    <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />-->
+    <!--注解适配器-->
+    <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter" />-->
+
+    <!--使用扫描配置，对某一个包下面的所有类进行扫描，
+    找出所有使用@Controller注解的Handler控制器类-->
+    <context:component-scan base-package="com.ccff.controller"/>
+
+    <!--配置视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+        <!--<property name="order" value="2"/>-->
+    </bean>
+    <!--<bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+        <property name="order" value="1"/>
+    </bean>
+    &lt;!&ndash;定义一个内部资源&ndash;&gt;
+    <bean id="doLoginInternal" class="org.springframework.web.servlet.view.InternalResourceView">
+        <property name="url" value="/WEB-INF/jsp/user/doLogin.jsp"/>
+    </bean>
+    &lt;!&ndash;定义一个外部资源&ndash;&gt;
+    <bean id="baidu" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="url" value="https://www.baidu.com/"/>
+    </bean>-->
+
+    <!--注册类型转换器-->
+    <bean id="dateConverter" class="com.ccff.convert.DateConvert" />
+
+    <!--注册类型转换服务Bean-->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <ref bean="dateConverter" />
+            </set>
+        </property>
+    </bean>
+
+    <!--配置异常处理器-->
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="java.lang.NullPointerException">exception/nullError</prop>
+            </props>
+        </property>
+        <property name="defaultErrorView" value="exception/error" />
+        <property name="exceptionAttribute" value="ex" />
+    </bean>
+    <!--配置自定义异常处理器-->
+    <bean class="com.ccff.exception.PasswordLengthExceptionResolver" />
+
+    <!--&lt;!&ndash;拦截器&ndash;&gt;
+    <mvc:interceptors>
+        &lt;!&ndash;多个拦截器顺序执行&ndash;&gt;
+        <mvc:interceptor>
+            &lt;!&ndash;/**表示所有url包括子url路径&ndash;&gt;
+            <mvc:mapping path="/**"/>
+            <bean class="com.ccff.interceptor.LoginInterceptor" />
+        </mvc:interceptor>
+        <mvc:interceptor>
+            &lt;!&ndash;/**表示所有url包括子url路径&ndash;&gt;
+            <mvc:mapping path="/**"/>
+            <bean class="com.ccff.interceptor.HandlerInterceptorDemo1" />
+        </mvc:interceptor>
+        <mvc:interceptor>
+            &lt;!&ndash;/**表示所有url包括子url路径&ndash;&gt;
+            <mvc:mapping path="/**"/>
+            <bean class="com.ccff.interceptor.HandlerInterceptorDemo2" />
+        </mvc:interceptor>
+    </mvc:interceptors>-->
+
+    <!--注册multipart解析器，这个id名字固定，是由DispatcherServlet直接调用的-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="utf-8" />
+        <property name="maxUploadSize" value="1048576" />
+    </bean>
+
+    <!--静态资源的解析，包括js/css/img...-->
+    <!--<mvc:resources mapping="/js/**" location="/js/" />
+    <mvc:resources mapping="/images/**" location="/images/" />-->
+
+    <mvc:default-servlet-handler />
+</beans>
