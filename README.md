@@ -21,3 +21,4 @@
 - [Spring MVC使用篇（十四）—— 文件上传](https://blog.csdn.net/weixin_36378917/article/details/84259846)
 - [Spring MVC使用篇（十五）—— JSON交互](https://blog.csdn.net/weixin_36378917/article/details/84313008)
 - [Spring MVC使用篇（十六）—— 实现RESTful风格](https://blog.csdn.net/weixin_36378917/article/details/84315494)
+-  [Spring MVC使用篇（十七）—— Spring MVC常用注解](https://blog.csdn.net/weixin_36378917/article/details/84949604)
